@@ -345,10 +345,13 @@ class Fp8LinearMethod(LinearMethodBase):
                 )
 
                 layer.input_scale = None
-                layer.weight = torch.nn.Parameter(weight, requires_grad=False)
-                layer.weight_scale_inv = torch.nn.Parameter(
-                    weight_scale, requires_grad=False
-                )
+                new_weight = torch.nn.Parameter(weight, requires_grad=False)
+                new_weight.__dict__.update(layer.weight.__dict__)
+                layer.weight = new_weight
+
+                new_scale = torch.nn.Parameter(weight_scale, requires_grad=False)
+                new_scale.__dict__.update(layer.weight_scale_inv.__dict__)
+                layer.weight_scale_inv = new_scale
             elif _is_cpu:
                 assert (
                     _is_cpu_amx_available
